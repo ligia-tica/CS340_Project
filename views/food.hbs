@@ -1,0 +1,78 @@
+<h1>Food</h1>
+
+{{! READ table }}
+<table>
+    <thead>
+        {{! For the table header row, we print the DB attribute names }}
+        <tr>
+            {{#each food.[0]}}
+            <th>
+                {{@key}}
+            </th>
+            {{/each}}
+            <th></th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {{! For each row, print the id, fname, lname, homeworld and age }}
+        {{#each food}}
+        <tr>
+            <td>{{this.id}}</td>
+            <td>{{this.foodName}}</td>
+            <td>{{this.quantity}}</td>
+            <td>{{this.unit}}</td>
+
+            {{! DELETE form }}
+            <form id='delete_food_form'>
+                <input type='hidden' name='delete_food_id' value='{{this.id}}' />
+                <input type='hidden' name='delete_food_name' value='{{this.foodName}}' />
+                <td>
+                    <button type='submit'>
+                        Delete
+                    </button>
+                </td>
+            </form>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>
+
+{{! CREATE form }}
+<h2>Add a Food </h2>
+<form class='cuForm' id='create_food_form'>
+    <label for='create_food_name'> Name: </label>
+    <input type='text' name='create_food_foodName' id='create_food_foodName' required />
+
+    <label for='create_food_quanity'>Quantity: </label>
+    <input type='number' name='create_food_quantity' id='create_food_quantity' min='0'/>
+
+    <label for='create_person_unit'>Unit:</label>
+    <input type='text' name='create_person_unit' id='create_person_unit' />
+
+    <input type='submit' />
+</form>
+
+{{! UPDATE form }}
+<h2>Update a Food</h2>
+<form class='cuForm' id='update_food_form'>
+    <label for='update_food_id'>Food to Update: </label>
+    <select name='update_food_id' id='update_food_id' required>
+        <option value='' disabled selected>Select a Food</option>
+        {{#each food}}
+        <option value='{{this.id}}' required>
+            {{this.id}}
+            -
+            {{this.foodName}}
+        </option>
+        {{/each}}
+    </select>
+
+    <label for='update_food_unit'>Quantity: </label>
+    <input type='number' name='update_food_quantity' id='update_food_quantity' min="0" />
+
+    <label for='update_food_unit'>Unit: </label>
+    <input type='text' name='update_food_unit' id='update_food_unit' />
+
+    <input type='submit' />
+</form>
