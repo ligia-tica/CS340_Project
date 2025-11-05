@@ -84,6 +84,25 @@ app.get('/animals', async function (req, res) {
     }
 });
 
+app.get('/passes', async function (req, res) {
+    try {
+        // Create and execute our queries
+        const query1 = `SELECT Passes.idPass, Passes.price, Passes.category FROM Passes;`;
+        const [Passes] = await db.query(query1);
+
+
+        // Render the food.hbs file, and also send the renderer
+        //  an object that contains food information
+        res.render('passes', { passes: Passes });
+    } catch (error) {
+        console.error('Error executing queries:', error);
+        // Send a generic error message to the browser
+        res.status(500).send(
+            'An error occurred while executing the database queries.'
+        );
+    }
+});
+
 // ########################################
 // ########## LISTENER
 
