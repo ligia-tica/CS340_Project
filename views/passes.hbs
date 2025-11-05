@@ -3,33 +3,26 @@
 {{! READ table }}
 <table>
     <thead>
-        {{! For the table header row, we print the DB attribute names }}
         <tr>
             {{#each passes.[0]}}
-            <th>
-                {{@key}}
-            </th>
+            <th>{{@key}}</th>
             {{/each}}
             <th></th>
         </tr>
     </thead>
-
+      {{! For each row, print the idPass, price and category }}
     <tbody>
-        {{! For each row, print the id, fname, lname, homeworld and age }}
         {{#each passes}}
         <tr>
             <td>{{this.idPass}}</td>
             <td>{{this.price}}</td>
             <td>{{this.category}}</td>
-            
 
             {{! DELETE form }}
             <form id='delete_pass_form'>
                 <input type='hidden' name='delete_pass_id' value='{{this.idPass}}' />
                 <td>
-                    <button type='submit'>
-                        Delete
-                    </button>
+                    <button type='submit'>Delete</button>
                 </td>
             </form>
         </tr>
@@ -38,27 +31,23 @@
 </table>
 
 {{! CREATE form }}
-<h2>Add a Pass </h2>
+<h2>Add a Pass</h2>
 <form class='cuForm' id='create_pass_form'>
-    <label for='create_price'>Price: </label>
-    <input type='number' name='create_price' id='create_price' required />
 
-    <label for='create_category'>Category: </label>
-    <select name = 'create_category' id='create_category' required>
-        <option value='' disabled selected>Select a Category</option>
-        <option value='Weekday'>Weekday</option>
-        <option value='Weekend'>Weekend</option>
-        <option value='Holiday'>Holiday</option>
+    <label for='create_price'>Price:</label>
+    <input type='number' name='create_price' id='create_price' step='0.01' min='0' required />
 
-    </select>
+    <label for='create_category'>Category:</label>
+    <input type='text' name='create_category' id='create_category' placeholder='Type a new category' required />
 
-    <input type='submit' value = Add a Pass/>
+    <input type='submit' value='Add a Pass' />
 </form>
 
 {{! UPDATE form }}
 <h2>Update a Pass</h2>
 <form class='cuForm' id='update_pass_form'>
-    <label for='update_pass_id'>Pass to update: </label>
+
+    <label for='update_pass_id'>Pass to Update:</label>
     <select name='update_pass_id' id='update_pass_id' required>
         <option value='' disabled selected>Select a Pass</option>
         {{#each passes}}
@@ -68,16 +57,8 @@
         {{/each}}
     </select>
 
-    <label for='update_price'>New Price: </label>
+    <label for='update_price'>New Price:</label>
     <input type='number' name='update_price' id='update_price' step='0.01' min='0' required />
-
-    <label for='update_category'>New Category: </label>
-    <select name='update_category' id='update_category' required>
-        <option value='' disabled selected>Select a Category</option>
-        <option value='Weekday'>Weekday</option>
-        <option value='Weekend'>Weekend</option>
-        <option value='Holiday'>Holiday</option>
-    </select>
 
     <input type='submit' value='Update Pass' />
 </form>

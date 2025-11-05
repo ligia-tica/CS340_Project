@@ -87,13 +87,13 @@ app.get('/animals', async function (req, res) {
 app.get('/passes', async function (req, res) {
     try {
         // Create and execute our queries
-        const query1 = `SELECT Passes.idPass, Passes.price, Passes.category FROM Passes;`;
-        const [Passes] = await db.query(query1);
+        const query1 = `SELECT idPass, price, category FROM Passes;`;
+        const [passes] = await db.query(query1);
 
 
-        // Render the food.hbs file, and also send the renderer
-        //  an object that contains food information
-        res.render('passes', { passes: Passes });
+        // Render the passes.hbs file, and also send the renderer
+        //  an object that contains pass information
+        res.render('passes', { passes: passes });
     } catch (error) {
         console.error('Error executing queries:', error);
         // Send a generic error message to the browser
@@ -102,6 +102,49 @@ app.get('/passes', async function (req, res) {
         );
     }
 });
+
+app.get('/sales', async function (req, res) {
+    try {
+        // Query 1: all sales
+        const [sales] = await db.query(`
+            SELECT idSale, idPass, idEmployee, passesSold, saleDate
+            FROM Sales;
+        `);
+
+        // Query 2: all passes for dropdown
+        const [passes] = await db.query(`
+            SELECT idPass, category
+            FROM Passes;
+        `);
+
+        // Query 3: all employees for dropdown
+        const [employees] = await db.query(`
+            SELECT idEmployee, firstName, lastName
+            FROM Employees;
+        `);
+
+        // Render the sales.hbs file
+        res.render('sales', { sales: sales, passes: passes, employees: employees });
+    } catch (error) {
+        console.error('Error executing queries:', error);
+        res.status(500).send('An error occurred while executing the database queries.');
+    }
+});
+
+app.get('/employees', async function (req, res) {
+    try {
+        // Query all employees
+        const query1 = `SELECT idEmployee, lastName, firstName, email, jobTitle, hourlyRate FROM Employees;`;
+        const [employees] = await db.query(query1);
+
+        // Render the employees.hbs file with the data
+        res.render('employees', { employees: employees });
+    } catch (error) {
+        console.error('Error executing employee query:', error);
+        res.status(500).send('An error occurred while executing the database queries.');
+    }
+});
+
 
 // ########################################
 // ########## LISTENER

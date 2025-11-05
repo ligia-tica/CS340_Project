@@ -1,0 +1,77 @@
+<h1>Sales</h1>
+
+{{! READ table }}
+<table>
+    <thead>
+        <tr>
+            {{#each sales.[0]}}
+            <th>{{@key}}</th>
+            {{/each}}
+        </tr>
+    </thead>
+
+    <tbody>
+        {{! For each row, print the idSale, idPass, idEmployee, passesSold and saleDate }}
+        {{#each sales}}
+        <tr>
+            <td>{{this.idSale}}</td>
+            <td>{{this.idPass}}</td>
+            <td>{{this.idEmployee}}</td>
+            <td>{{this.passesSold}}</td>
+            <td>{{this.saleDate}}</td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>
+
+{{! CREATE form }}
+<h2>Add a Sale</h2>
+<form class='cuForm' id='create_sale_form'>
+
+    <label for='create_passesSold'>Passes Sold:</label>
+    <input type='number' name='create_passesSold' id='create_passesSold' min='1' required />
+
+    <label for='create_saleDate'>Sale Date:</label>
+    <input type='date' name='create_saleDate' id='create_saleDate' required />
+
+    <label for='create_pass'>Pass:</label>
+    <select name='create_pass' id='create_pass' required>
+        <option value='' disabled selected>Select a Pass</option>
+        {{#each passes}}
+        <option value='{{this.idPass}}'>{{this.category}}</option>
+        {{/each}}
+    </select>
+
+    <label for='create_employee'>Employee:</label>
+    <select name='create_employee' id='create_employee' required>
+        <option value='' disabled selected>Select an Employee</option>
+        {{#each employees}}
+        <option value='{{this.idEmployee}}'>{{this.firstName}} {{this.lastName}}</option>
+        {{/each}}
+    </select>
+
+    <input type='submit' value='Add Sale' />
+</form>
+
+{{! UPDATE form }}
+<h2>Update a Sale</h2>
+<form class='cuForm' id='update_sale_form'>
+
+    <label for='update_sale_id'>Sale to Update:</label>
+    <select name='update_sale_id' id='update_sale_id' required>
+        <option value='' disabled selected>Select a Sale</option>
+        {{#each sales}}
+        <option value='{{this.idSale}}'>
+            {{this.idSale}}
+        </option>
+        {{/each}}
+    </select>
+
+    <label for='update_passes_sold'>New Passes Sold:</label>
+    <input type='number' name='update_passes_sold' id='update_passes_sold' min='0' required />
+
+    <label for='update_sales_date'>New Sale Date:</label>
+    <input type='date' name='update_sales_date' id='update_sales_date' required />
+
+    <input type='submit' />
+</form>

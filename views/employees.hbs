@@ -1,0 +1,89 @@
+<h1>Employees</h1>
+
+{{! READ table }}
+<table>
+    <thead>
+        <tr>
+            {{#each employees.[0]}}
+            <th>{{@key}}</th>
+            {{/each}}
+            <th></th>
+        </tr>
+    </thead>
+          {{! For each row, print the idEmployee, lastName, firstName, email, jobTitle, and hourly Rate}}
+    <tbody>
+        {{#each employees}}
+        <tr>
+            <td>{{this.idEmployee}}</td>
+            <td>{{this.lastName}}</td>
+            <td>{{this.firstName}}</td>
+            <td>{{this.email}}</td>
+            <td>{{this.jobTitle}}</td>
+            <td>{{this.hourlyRate}}</td>
+
+            {{! DELETE form }}
+            <form id='delete_employee_form'>
+                <input type='hidden' name='idEmployee_selected' value='{{this.idEmployee}}' />
+                <td>
+                    <button type='submit'>Delete</button>
+                </td>
+            </form>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>
+
+{{! CREATE form }}
+<h2>Add an Employee</h2>
+<form class='cuForm' id='create_employee_form'>
+
+    <label for='create_firstName'>First Name:</label>
+    <input type='text' name='firstNameInput' id='create_firstName' required />
+
+    <label for='create_lastName'>Last Name:</label>
+    <input type='text' name='lastNameInput' id='create_lastName' required />
+
+    <label for='create_email'>Email:</label>
+    <input type='email' name='emailInput' id='create_email' required />
+
+    <label for='create_jobTitle'>Job Title:</label>
+    <input type='text' name='jobTitleInput' id='create_jobTitle' required />
+
+    <label for='create_hourlyRate'>Hourly Rate:</label>
+    <input type='number' name='hourlyRateInput' id='create_hourlyRate' min='0' step='0.01' required />
+
+    <input type='submit' value='Add Employee' />
+</form>
+
+{{! UPDATE form }}
+<h2>Update an Employee</h2>
+<form class='cuForm' id='update_employee_form'>
+
+    <label for='update_employee_id'>Employee to Update:</label>
+    <select name='idEmployee_selected' id='update_employee_id' required>
+        <option value='' disabled selected>Select an Employee</option>
+        {{#each employees}}
+        <option value='{{this.idEmployee}}'>
+            {{this.idEmployee}} - {{this.firstName}} {{this.lastName}}
+        </option>
+        {{/each}}
+    </select>
+
+    <label for='update_firstName'>New First Name:</label>
+    <input type='text' name='firstNameInput' id='update_firstName' required />
+
+    <label for='update_lastName'>New Last Name:</label>
+    <input type='text' name='lastNameInput' id='update_lastName' required />
+
+    <label for='update_email'>New Email:</label>
+    <input type='email' name='emailInput' id='update_email' required />
+
+    <label for='update_jobTitle'>New Job Title:</label>
+    <input type='text' name='jobTitleInput' id='update_jobTitle' required />
+
+    <label for='update_hourlyRate'>New Hourly Rate:</label>
+    <input type='number' name='hourlyRateInput' id='update_hourlyRate' min='0' step='0.01' required />
+
+    <input type='submit' value='Update Employee' />
+</form>
+
