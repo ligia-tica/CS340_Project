@@ -35,15 +35,46 @@ app.get('/', async function (req, res) {
 app.get('/food', async function (req, res) {
     try {
         // Create and execute our queries
-        // In query1, we use a JOIN clause to display the names of the homeworlds
-        const query1 = 'SELECT Food.id, foodName, quantity, unit, \
-            FROM Food; ' ;
+        const query1 = `SELECT Food.idFood, Food.foodName, Food.quantity, Food.unit FROM Food;`;
         const [Food] = await db.query(query1);
 
 
-        // Render the bsg-people.hbs file, and also send the renderer
-        //  an object that contains our bsg_people and bsg_homeworld information
-        res.render('Food', { Food: Food });
+        // Render the food.hbs file, and also send the renderer
+        //  an object that contains food information
+        res.render('food', { food: Food });
+    } catch (error) {
+        console.error('Error executing queries:', error);
+        // Send a generic error message to the browser
+        res.status(500).send(
+            'An error occurred while executing the database queries.'
+        );
+    }
+});
+
+app.get('/animals', async function (req, res) {
+    try {
+        // Create and execute our queries
+        const query1 = `SELECT Animals.idAnimal, Animals.name, Animals.type, Animals.dateOfBirth, Food.foodName AS 'Diet' FROM Animals \
+        LEFT JOIN Food ON Animals.idFood = Food.idFood;`;
+        const query2 = 'SELECT * FROM Food;';
+        const [Animals] = await db.query(query1);
+        const [Diet] = await db.query(query2);
+
+        // Prompted Claude AI to give code on how to format the dates shorthand:
+        Animals.forEach(animal => {
+            if (animal.dateOfBirth) {
+                const date = new Date(animal.dateOfBirth);
+                animal.dateOfBirth = date.toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric' 
+                });
+            }
+        });        
+
+        // Render the animals.hbs file, and also send the renderer
+        //  an object that contains animals information
+        res.render('animals', { animals: Animals, food: Diet });
     } catch (error) {
         console.error('Error executing queries:', error);
         // Send a generic error message to the browser
