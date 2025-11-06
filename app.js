@@ -122,7 +122,18 @@ app.get('/sales', async function (req, res) {
             SELECT idEmployee, firstName, lastName
             FROM Employees;
         `);
-
+        
+        // Prompted Claude AI to give code on how to format the dates shorthand:
+        sales.forEach(sale => {
+            if (sale.saleDate) {
+                const date = new Date(sale.saleDate);
+                sale.saleDate = date.toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric' 
+                });
+            }
+        });
         // Render the sales.hbs file
         res.render('sales', { sales: sales, passes: passes, employees: employees });
     } catch (error) {
@@ -142,6 +153,32 @@ app.get('/employees', async function (req, res) {
     } catch (error) {
         console.error('Error executing employee query:', error);
         res.status(500).send('An error occurred while executing the database queries.');
+    }
+});
+
+app.get('/employees_animals', async function (req, res) {
+    try {
+        // Create and execute our queries
+        // Prompted Claude AI to give code on how to concatenate first name and last names of Employees:
+        const query1 = `SELECT Employees_Animals.idEmployeeAnimal, CONCAT(Employees.lastName, ', ', Employees.firstName) AS EmployeeName, Animals.name AS AnimalName
+        FROM Employees_Animals
+        INNER JOIN Employees ON Employees_Animals.idEmployee = Employees.idEmployee
+        INNER JOIN Animals ON Employees_Animals.idAnimal = Animals.idAnimal;`;
+        const query2 = 'SELECT * FROM Employees;';
+        const query3 = 'SELECT * FROM Animals;';
+        const [Employees_Animals] = await db.query(query1);
+        const [Employees] = await db.query(query2);
+        const [Animals] = await db.query(query3);       
+
+        // Render the employees_animals.hbs file, and also send the renderer
+        //  an object that contains animals information
+        res.render('employees_animals', { employees_animals: Employees_Animals, employees: Employees, animals: Animals });
+    } catch (error) {
+        console.error('Error executing queries:', error);
+        // Send a generic error message to the browser
+        res.status(500).send(
+            'An error occurred while executing the database queries.'
+        );
     }
 });
 

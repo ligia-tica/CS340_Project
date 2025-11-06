@@ -1,0 +1,56 @@
+<h1>Employees and Animals </h1>
+<h2> This table shows which Employee is trained to take care of which Animal. </h2>
+
+{{! READ table }}
+<table>
+    <thead>
+        <tr>
+            {{#each employees_animals.[0]}}
+            <th>{{@key}}</th>
+            {{/each}}
+        </tr>
+    </thead>
+
+    <tbody>
+        {{! For each row, print the id, Employee name, Animal name }}
+        {{#each employees_animals}}
+        <tr>
+            <td>{{this.idEmployeeAnimal}}</td>
+            <td>{{this.EmployeeName}}</td>
+            <td>{{this.AnimalName}}</td>
+
+            {{! DELETE form }}
+            <form id='delete_employees_animals_form'>
+                <input type='hidden' name='delete_employees_animals_id' value='{{this.idEmployeeAnimal}}' />
+                <td>
+                    <button type='submit'>
+                        Delete
+                    </button>
+                </td>
+            </form>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>
+
+{{! CREATE form }}
+<h2>Add an Employee and Animal they are trained to take care of </h2>
+<form class='cuForm' id='create_employees_animals_form'>
+    <label for='create_employees_animals_name'>Employee name: </label>
+        <select name='create_employees_animals_name' id='create_employees_animals_name'>
+        <option value='' selected>Select an Employee</option>
+        {{#each employees}}
+        <option value='{{this.idEmployee}}' required>{{this.lastName}}, {{this.firstName}}</option>
+        {{/each}}
+    </select>
+        <label for='create_employees_animals_name'>Animal name: </label>
+        <select name='create_employees_animals_name' id='create_employees_animals_name'>
+        <option value='' selected>Select an Animal</option>
+        {{#each animals}}
+        <option value='{{this.idAnimal}}' required>{{this.name}}</option>
+        {{/each}}
+    </select>
+
+ 
+    <input type='submit' />
+</form>
