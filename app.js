@@ -106,10 +106,18 @@ app.get('/passes', async function (req, res) {
 app.get('/sales', async function (req, res) {
     try {
         // Query 1: all sales
-        const [sales] = await db.query(`
-            SELECT idSale, idPass, idEmployee, passesSold, saleDate
-            FROM Sales;
-        `);
+    const [sales] = await db.query(`
+    SELECT 
+        Sales.idSale,
+        Passes.category AS passCategory,
+        CONCAT(Employees.firstName, ' ', Employees.lastName) AS employeeName,
+        Sales.passesSold,
+        Sales.saleDate
+    FROM Sales 
+    JOIN Passes ON Sales.idPass = Passes.idPass
+    JOIN Employees ON Sales.idEmployee = Employees.idEmployee
+`);
+
 
         // Query 2: all passes for dropdown
         const [passes] = await db.query(`

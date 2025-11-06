@@ -15,8 +15,8 @@
         {{#each sales}}
         <tr>
             <td>{{this.idSale}}</td>
-            <td>{{this.idPass}}</td>
-            <td>{{this.idEmployee}}</td>
+            <td>{{this.passCategory}}</td>
+            <td>{{this.employeeName}}</td>
             <td>{{this.passesSold}}</td>
             <td>{{this.saleDate}}</td>
         </tr>
@@ -50,7 +50,7 @@
         {{/each}}
     </select>
 
-    <input type='submit' value='Add Sale' />
+    <input type='submit'  />
 </form>
 
 {{! UPDATE form }}
