@@ -24,9 +24,9 @@
     </tbody>
 </table>
 
-{{! CREATE form }}
+{{! CREATE form with added confirmation }}
 <h2>Add a Sale</h2>
-<form class='cuForm' id='create_sale_form'>
+<form class='cuForm' id='create_sale_form' onsubmit="return confirm('Are you sure you want to create this sale?');">
 
     <label for='create_passesSold'>Passes Sold:</label>
     <input type='number' name='create_passesSold' id='create_passesSold' min='1' required />
@@ -53,9 +53,9 @@
     <input type='submit'  />
 </form>
 
-{{! UPDATE form }}
+{{! UPDATE form with added confirmation }}
 <h2>Update a Sale</h2>
-<form class='cuForm' id='update_sale_form'>
+<form class='cuForm' id='update_sale_form'onsubmit="return confirm('Are you sure you want to update this sale?');">
 
     <label for='update_sale_id'>Sale to Update:</label>
     <select name='update_sale_id' id='update_sale_id' required>
@@ -72,6 +72,24 @@
 
     <label for='update_sales_date'>New Sale Date:</label>
     <input type='date' name='update_sales_date' id='update_sales_date' required />
+
+    <label for='update_pass'>New Pass Type:</label>
+    <select name='update_pass' id='update_pass' required>
+        <option value='' disabled selected>Select a Pass</option>
+        {{#each passes}}
+        <option value='{{this.idPass}}'>{{this.category}}</option>
+        {{/each}}
+     </select>
+
+    <label for='update_employee'>New Employee:</label>
+    <select name='update_employee' id='update_employee' required>
+        <option value='' disabled selected>Select an Employee</option>
+        {{#each employees}}
+        <option value='{{this.idEmployee}}'>{{this.firstName}} {{this.lastName}}</option>
+        {{/each}}
+     </select>
+
+
 
     <input type='submit' />
 </form>

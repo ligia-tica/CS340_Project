@@ -18,21 +18,23 @@
             <td>{{this.price}}</td>
             <td>{{this.category}}</td>
 
-            {{! DELETE form }}
-            <form id='delete_pass_form'>
-                <input type='hidden' name='delete_pass_id' value='{{this.idPass}}' />
-                <td>
+            <td>
+
+            {{! DELETE form with added confirmation}}
+            <form id='delete_pass_form' onsubmit="return confirm('Are you sure you want to delete this pass?');">
+                <input type='hidden' name='delete_pass_id' value='{{this.idPass}}' />       
                     <button type='submit'>Delete</button>
-                </td>
+                
             </form>
+            </td>
         </tr>
         {{/each}}
     </tbody>
 </table>
 
-{{! CREATE form }}
+{{! CREATE form with added confirmation }}
 <h2>Add a Pass</h2>
-<form class='cuForm' id='create_pass_form'>
+<form class='cuForm' id='create_pass_form'onsubmit="return confirm('Are you sure you want to create this pass?');">
 
     <label for='create_price'>Price:</label>
     <input type='number' name='create_price' id='create_price' step='0.01' min='0' required />
@@ -43,9 +45,9 @@
     <input type='submit' />
 </form>
 
-{{! UPDATE form }}
+{{! UPDATE form with added confirmation}}
 <h2>Update a Pass</h2>
-<form class='cuForm' id='update_pass_form'>
+<form class='cuForm' id='update_pass_form'onsubmit="return confirm('Are you sure you want to update this pass?');">
 
     <label for='update_pass_id'>Pass to Update:</label>
     <select name='update_pass_id' id='update_pass_id' required>

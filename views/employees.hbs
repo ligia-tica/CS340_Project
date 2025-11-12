@@ -21,8 +21,8 @@
             <td>{{this.jobTitle}}</td>
             <td>{{this.hourlyRate}}</td>
 
-            {{! DELETE form }}
-            <form id='delete_employee_form'>
+            {{! DELETE form with confirmation }}
+            <form id='delete_employee_form' onsubmit="return confirm('Are you sure you want to delete this employee?');">
                 <input type='hidden' name='idEmployee_selected' value='{{this.idEmployee}}' />
                 <td>
                     <button type='submit'>Delete</button>
@@ -33,9 +33,9 @@
     </tbody>
 </table>
 
-{{! CREATE form }}
+{{! CREATE form with confirmation}}
 <h2>Add an Employee</h2>
-<form class='cuForm' id='create_employee_form'>
+<form class='cuForm' id='create_employee_form' onsubmit="return confirm('Are you sure you want to create this employee?');">
 
     <label for='create_firstName'>First Name:</label>
     <input type='text' name='firstNameInput' id='create_firstName' required />
@@ -55,9 +55,9 @@
     <input type='submit'  />
 </form>
 
-{{! UPDATE form }}
+{{! UPDATE form with confirmation }}
 <h2>Update an Employee</h2>
-<form class='cuForm' id='update_employee_form'>
+<form class='cuForm' id='update_employee_form' onsubmit="return confirm('Are you sure you want to update this employee?');">
 
     <label for='update_employee_id'>Employee to Update:</label>
     <select name='idEmployee_selected' id='update_employee_id' required>

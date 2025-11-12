@@ -23,8 +23,8 @@
             <td>{{this.quantity}}</td>
             <td>{{this.unit}}</td>
 
-            {{! DELETE form }}
-            <form id='delete_food_form'>
+            {{! DELETE form with added confirmation}}
+            <form id='delete_food_form' onsubmit="return confirm('Are you sure you want to delete this food?');">
                 <input type='hidden' name='delete_food_id' value='{{this.id}}' />
                 <input type='hidden' name='delete_food_name' value='{{this.foodName}}' />
                 <td>
@@ -38,9 +38,9 @@
     </tbody>
 </table>
 
-{{! CREATE form }}
+{{! CREATE form with confirmation }}
 <h2>Add a Food </h2>
-<form class='cuForm' id='create_food_form'>
+<form class='cuForm' id='create_food_form' onsubmit="return confirm('Are you sure you want to create this food?');">
     <label for='create_food_name'> Name: </label>
     <input type='text' name='create_food_foodName' id='create_food_foodName' required />
 
@@ -53,9 +53,9 @@
     <input type='submit' />
 </form>
 
-{{! UPDATE form }}
+{{! UPDATE form with confirmation }}
 <h2>Update a Food</h2>
-<form class='cuForm' id='update_food_form'>
+<form class='cuForm' id='update_food_form'onsubmit="return confirm('Are you sure you want to update this food?');">
     <label for='update_food_id'>Food to Update: </label>
     <select name='update_food_id' id='update_food_id' required>
         <option value='' disabled selected>Select a Food</option>

@@ -19,8 +19,8 @@
             <td>{{this.EmployeeName}}</td>
             <td>{{this.AnimalName}}</td>
 
-            {{! DELETE form }}
-            <form id='delete_employees_animals_form'>
+            {{! DELETE form with confirmation}}
+            <form id='delete_employees_animals_form' onsubmit="return confirm('Are you sure you want to delete this animal_employee relationship?');">
                 <input type='hidden' name='delete_employees_animals_id' value='{{this.idEmployeeAnimal}}' />
                 <td>
                     <button type='submit'>
@@ -33,9 +33,9 @@
     </tbody>
 </table>
 
-{{! CREATE form }}
+{{! CREATE form with confirmation }}
 <h2>Add an Employee and Animal they are trained to take care of </h2>
-<form class='cuForm' id='create_employees_animals_form'>
+<form class='cuForm' id='create_employees_animals_form' onsubmit="return confirm('Are you sure you want to create this animal_employee relationship?');">
     <label for='create_employees_animals_name'>Employee name: </label>
         <select name='create_employees_animals_name' id='create_employees_animals_name'>
         <option value='' selected>Select an Employee</option>
