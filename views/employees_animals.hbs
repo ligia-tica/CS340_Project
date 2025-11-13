@@ -50,7 +50,35 @@
         <option value='{{this.idAnimal}}' required>{{this.name}}</option>
         {{/each}}
     </select>
-
+</form>
  
+{{! UPDATE form with confirmation}}
+<h2>Update an Employee</h2>
+<form class='cuForm' id='update_employee_form' onsubmit="return confirm('Are you sure you want to update this Employee?');">
+    <label for='update_employee_id'>Employee to update: </label>
+    <select name='update_employee_id' id='update_employee_id' required>
+        <option value='' disabled selected>Select an Employee</option>
+        {{#each employees}}
+        <option value='{{this.idEmployee}}' required>
+            {{this.idEmployee}}
+            -
+            {{this.lastName}}, {{this.firstName}}
+        </option>
+        {{/each}}
+    </select> 
+
+    <label for='update_animal_id'>Animal update: </label>
+    <select name='update_animal_id' id='update_animal_id' required>
+         <option value='' disabled selected>Select an Animal</option>
+        {{#each animals}}
+        <option value='{{this.idAnimal}}' >
+            {{this.idAnimal}}
+            -
+            {{this.name}}
+        </option>
+        {{/each}}
+    </select>
+
+
     <input type='submit' />
 </form>
