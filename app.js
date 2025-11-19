@@ -191,8 +191,45 @@ app.get('/employees_animals', async function (req, res) {
     }
 });
 
-
 // CREATE ROUTES
+app.post('/employees/create', async function (req, res) {
+    try {
+        // Parse frontend form information
+        let data = req.body;
+
+        // Cleanse data - If hourlyRate isnt a number, make it NULL.
+        if (isNaN(parseFloat(data.create_employee_hourlyRate)))
+            data.create_employee_hourlyRate = null;
+    
+
+        // Create and execute our queries
+        // Using parameterized queries (Prevents SQL injection attacks)
+        const query1 = `CALL sp_CreateEmployee(?, ?, ?, ?, ?, @new_employee_id);`;
+
+        // Store ID of last inserted row
+        const [[[rows]]] = await db.query(query1, [
+            data.create_employee_lastName,
+            data.create_employee_firstName,
+            data.create_employee_email,
+            data.create_employee_jobTitle,
+            data.create_employee_hourlyRate
+        ]);
+
+        console.log(`CREATE Employee. ID: ${rows.new_employee_id} ` +
+            `Name: ${data.create_employee_firstName} ${data.create_employee_lastName}`
+        );
+
+        // Redirect the user to the updated webpage
+        res.redirect('/employees');
+    } catch (error) {
+        console.error('Error creating employee:', error);
+        // Send a generic error message to the browser
+        res.status(500).send(
+            'An error occurred while creating the employee.'
+        );
+    }
+});
+
 
 app.post('/Animals', async function (req, res) {
     try {
