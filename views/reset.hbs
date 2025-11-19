@@ -1,0 +1,29 @@
+{{!-- 
+    Used Claude Ai to generate the styling of the button below.
+    Prompt: How do I align the red button with the yellow triangle above it and have its outline a bit thicker when the pointer is hovering over it?
+    URL: https://claude.ai/chat/719cb785-3594-48cf-8f51-ebc9612ac610
+--}}
+
+
+<style>
+    .reset-btn {
+        background-color: rgb(154, 3, 3);
+        color: white;
+        padding: 10px 20px;
+        font-size: 16px;
+        border: 2px solid rgb(154, 3, 3);
+        cursor: pointer;
+        margin-left: 28px;
+    }
+    
+    .reset-btn:hover {
+        border: 3px solid black;
+    }
+</style>
+
+<h2>⚠️ Reset Database ?</h2>
+<form method='POST' action='/Reset' onsubmit="return confirm('⚠️ WARNING: This will DELETE ALL DATA and reset the database. Are you SURE?');">
+    <button type='submit' class='reset-btn'>
+        Reset Database
+    </button>
+</form>

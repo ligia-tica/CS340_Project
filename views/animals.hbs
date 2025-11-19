@@ -41,7 +41,7 @@
 
 {{! CREATE form with confirmation}}
 <h2>Add an animal </h2>
-<form class='cuForm' id='create_animal_form' onsubmit="return confirm('Are you sure you want to create this animal?');">
+<form class='cuForm' id='create_animal_form' method='POST' action='/Animals' onsubmit="return confirm('Are you sure you want to create this animal?');">
     <label for='create_animal_name'>Name: </label>
     <input type='text' name='create_animal_name' id='create_animal_name' required />
 
@@ -52,11 +52,11 @@
     <input type='date' name='create_animal_dateOfBirth' id='create_animal_dateOfBirth' required />
 
     <label for='create_animal_diet'>Diet: </label>
-    <select name='create_animal_diet' id='create_animal_diet'>
+    <select name='create_animal_diet' id='create_animal_diet' required>
         <option value='' selected>Select a Food</option>
         <option value='NULL'>&lt; None &gt;</option>
         {{#each food}}
-        <option value='{{this.idFood}}' required>{{this.foodName}}</option>
+        <option value='{{this.idFood}}' >{{this.foodName}}</option>
         {{/each}}
     </select>
 

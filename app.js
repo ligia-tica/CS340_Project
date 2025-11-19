@@ -51,7 +51,7 @@ app.get('/food', async function (req, res) {
     }
 });
 
-app.get('/animals', async function (req, res) {
+app.get('/Animals', async function (req, res) {
     try {
         // Create and execute our queries
         const query1 = `SELECT Animals.idAnimal, Animals.name, Animals.type, Animals.dateOfBirth, Food.foodName AS 'Diet' FROM Animals \
@@ -83,6 +83,7 @@ app.get('/animals', async function (req, res) {
         );
     }
 });
+
 
 app.get('/passes', async function (req, res) {
     try {
@@ -190,6 +191,76 @@ app.get('/employees_animals', async function (req, res) {
     }
 });
 
+
+// CREATE ROUTES
+
+app.post('/Animals', async function (req, res) {
+    try {
+        // Parse frontend form information
+        let data = req.body;
+
+        // Handle NULL case from dropdown
+        let dietValue = data.create_animal_diet;
+        if (dietValue === '' || dietValue === 'NULL') {
+            dietValue = null;
+        }
+
+        // Create and execute our queries
+        // Using parameterized queries (Prevents SQL injection attacks)
+        const query1 = `CALL sp_CreateAnimal(?, ?, ?, ?, @new_id);`;
+
+        // Store ID of last inserted row
+        await db.query(query1, [
+            data.create_animal_name,
+            data.create_animal_type,
+            data.create_animal_dateOfBirth,
+            dietValue
+        ]);
+
+        // Get the OUT parameter value
+        const [result] = await db.query('SELECT @new_id as new_id');
+        const newId = result[0].new_id;
+
+        console.log(`CREATE animals. ID: ${newId} ` +
+            `name: ${data.create_animal_name}` +
+            `diet: ${dietValue}`
+        );
+
+        // Redirect the user to the updated webpage
+        res.redirect('/Animals');
+    } catch (error) {
+        console.error('Error executing queries:', error);
+        // Send a generic error message to the browser
+        res.status(500).send(
+            'An error occurred while executing the database queries.'
+        );
+    }
+});
+
+// GET route - shows the reset page
+app.get('/Reset', function (req, res) {
+    res.render('reset');
+});
+
+// POST route - performs the reset
+
+app.post('/Reset', async function (req, res) {
+    try {
+        
+        // Call the reset stored procedure
+        await db.query('CALL ResetDatabase();');
+        
+        console.log('✓ Database reset complete');
+        
+        // Redirect to home or animals page
+        res.redirect('/');
+    } catch (error) {
+        console.error('Error resetting database:', error);
+        res.status(500).send(
+            'An error occurred while resetting the database.'
+        );
+    }
+});
 
 // ########################################
 // ########## LISTENER
