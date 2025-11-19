@@ -1,3 +1,5 @@
+-- Citation for the following code:
+-- Date: 11/18/2025
 -- Base code used from Exploration - - Implementing CUD operations in your app
 -- URL: https://canvas.oregonstate.edu/courses/2017561/pages/exploration-implementing-cud-operations-in-your-app?module_item_id=25645149
 

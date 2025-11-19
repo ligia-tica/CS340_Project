@@ -1,3 +1,12 @@
+/* 
+Citation for the following code:
+Date: 11/4/2025 (various additional dates)
+Base code used from Exploration - Web Application Technology and Exploration Implementing CUD Operations in your app
+URL: https://canvas.oregonstate.edu/courses/2017561/pages/exploration-web-application-technology-2?module_item_id=25645131
+URL: https://canvas.oregonstate.edu/courses/2017561/pages/exploration-implementing-cud-operations-in-your-app?module_item_id=25645149
+*/
+
+
 // ########################################
 // ########## SETUP
 
@@ -8,7 +17,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
-const PORT = 11000;
+const PORT = 11111;
 
 // Database
 const db = require('./database/db-connector');

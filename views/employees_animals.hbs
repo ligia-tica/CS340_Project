@@ -1,3 +1,13 @@
+{{!--
+Citation for the following code:
+Date: 11/4/2025 (various additional dates)
+Base code used from Exploration - Web Application Technology and Exploration Implementing CUD Operations in your app
+URL: https://canvas.oregonstate.edu/courses/2017561/pages/exploration-web-application-technology-2?module_item_id=25645131
+URL: https://canvas.oregonstate.edu/courses/2017561/pages/exploration-implementing-cud-operations-in-your-app?module_item_id=25645149
+Onsubmit code from Microsoft Copilot Prompt: How do I add a confirmation message in the form tag of my hbs file?
+
+--}}
+
 <h1>Employees and Animals </h1>
 <h2> This table shows which Employee is trained to take care of which Animal. </h2>
 
@@ -8,6 +18,7 @@
             {{#each employees_animals.[0]}}
             <th>{{@key}}</th>
             {{/each}}
+            <th></th>
         </tr>
     </thead>
 
