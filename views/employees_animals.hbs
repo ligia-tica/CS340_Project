@@ -31,8 +31,8 @@ Onsubmit code from Microsoft Copilot Prompt: How do I add a confirmation message
             <td>{{this.AnimalName}}</td>
 
             {{! DELETE form with confirmation}}
-            <form id='delete_employees_animals_form' onsubmit="return confirm('Are you sure you want to delete this animal_employee relationship?');">
-                <input type='hidden' name='delete_employees_animals_id' value='{{this.idEmployeeAnimal}}' />
+            <form id='delete_employees_animals_form' method='POST' action='/Employees_Animals/delete' onsubmit="return confirm('Are you sure you want to delete this Employee-Animal relationship?');">
+                <input type='hidden' name='delete_employees_animals_idEmployeeAnimal' value='{{this.idEmployeeAnimal}}' />
                 <td>
                     <button type='submit'>
                         Delete
@@ -46,50 +46,61 @@ Onsubmit code from Microsoft Copilot Prompt: How do I add a confirmation message
 
 {{! CREATE form with confirmation }}
 <h2>Add an Employee and Animal they are trained to take care of </h2>
-<form class='cuForm' id='create_employees_animals_form' onsubmit="return confirm('Are you sure you want to create this animal_employee relationship?');">
-    <label for='create_employees_animals_name'>Employee name: </label>
-        <select name='create_employees_animals_name' id='create_employees_animals_name'>
-        <option value='' selected>Select an Employee</option>
+<form class='cuForm' id='create_employees_animals_form' method='POST' action='/Employees_Animals' onsubmit="return confirm('Are you sure you want to create this animal_employee relationship?');">
+    <label for='create_employees_animals_idEmployee'>Employee name: </label>
+        <select name='create_employees_animals_idEmployee' id='create_employees_animals_idEmployee' required>
+        <option value='' disabled selected>Select an Employee</option>
         {{#each employees}}
-        <option value='{{this.idEmployee}}' required>{{this.lastName}}, {{this.firstName}}</option>
+        <option value='{{this.idEmployee}}'>{{this.lastName}}, {{this.firstName}}</option>
         {{/each}}
     </select>
-        <label for='create_employees_animals_name'>Animal name: </label>
-        <select name='create_employees_animals_name' id='create_employees_animals_name'>
-        <option value='' selected>Select an Animal</option>
+        <label for='create_employees_animals_idAnimal'>Animal name: </label>
+        <select name='create_employees_animals_idAnimal' id='create_employees_animals_idAnimal' required>
+        <option value='' disabled selected>Select an Animal</option>
         {{#each animals}}
-        <option value='{{this.idAnimal}}' required>{{this.name}}</option>
+        <option value='{{this.idAnimal}}'>{{this.name}}</option>
         {{/each}}
     </select>
+    <input type='submit' />
 </form>
  
 {{! UPDATE form with confirmation}}
 <h2>Update an Employee</h2>
-<form class='cuForm' id='update_employee_form' onsubmit="return confirm('Are you sure you want to update this Employee?');">
-    <label for='update_employee_id'>Employee to update: </label>
-    <select name='update_employee_id' id='update_employee_id' required>
+<form class='cuForm' id='update_employee_form' method='POST' action='/Employees_Animals/update' 
+      onsubmit="return confirm('Are you sure you want to update this Employee?');">
+
+    <!-- Employee -->
+    <label for='update_employees_animals_idEmployee'>Employee to update: </label>
+    <select name='update_employees_animals_idEmployee' id='update_employees_animals_idEmployee' required>
         <option value='' disabled selected>Select an Employee</option>
         {{#each employees}}
-        <option value='{{this.idEmployee}}' required>
-            {{this.idEmployee}}
-            -
-            {{this.lastName}}, {{this.firstName}}
-        </option>
-        {{/each}}
-    </select> 
-
-    <label for='update_animal_id'>Animal update: </label>
-    <select name='update_animal_id' id='update_animal_id' required>
-         <option value='' disabled selected>Select an Animal</option>
-        {{#each animals}}
-        <option value='{{this.idAnimal}}' >
-            {{this.idAnimal}}
-            -
-            {{this.name}}
+        <option value='{{this.idEmployee}}'>
+            {{this.idEmployee}} - {{this.lastName}}, {{this.firstName}}
         </option>
         {{/each}}
     </select>
 
+    <!-- Old animal -->
+    <label for='update_employees_animals_oldIdAnimal'>Current Animal: </label>
+    <select name='update_employees_animals_oldIdAnimal' id='update_employees_animals_oldIdAnimal' required>
+        <option value='' disabled selected>Select Current Animal</option>
+        {{#each animals}}
+        <option value='{{this.idAnimal}}'>
+            {{this.idAnimal}} - {{this.name}}
+        </option>
+        {{/each}}
+    </select>
+
+    <!-- New animal -->
+    <label for='update_employees_animals_newIdAnimal'>New Animal: </label>
+    <select name='update_employees_animals_newIdAnimal' id='update_employees_animals_newIdAnimal' required>
+        <option value='' disabled selected>Select New Animal</option>
+        {{#each animals}}
+        <option value='{{this.idAnimal}}'>
+            {{this.idAnimal}} - {{this.name}}
+        </option>
+        {{/each}}
+    </select>
 
     <input type='submit' />
 </form>

@@ -35,8 +35,8 @@ Onsubmit code from Microsoft Copilot Prompt: How do I add a confirmation message
             <td>{{this.unit}}</td>
 
             {{! DELETE form with added confirmation}}
-            <form id='delete_food_form' onsubmit="return confirm('Are you sure you want to delete this food?');">
-                <input type='hidden' name='delete_food_id' value='{{this.id}}' />
+            <form id='delete_food_form' method='POST' action='/Food/delete' onsubmit="return confirm('Are you sure you want to delete this food?');">
+                <input type='hidden' name='delete_food_id' value='{{this.idFood}}' />
                 <input type='hidden' name='delete_food_name' value='{{this.foodName}}' />
                 <td>
                     <button type='submit'>
@@ -51,27 +51,27 @@ Onsubmit code from Microsoft Copilot Prompt: How do I add a confirmation message
 
 {{! CREATE form with confirmation }}
 <h2>Add a Food </h2>
-<form class='cuForm' id='create_food_form' onsubmit="return confirm('Are you sure you want to create this food?');">
-    <label for='create_food_name'> Name: </label>
+<form class='cuForm' id='create_food_form' method='POST' action='/Food' onsubmit="return confirm('Are you sure you want to create this food?');">
+    <label for='create_food_foodName'> Name: </label>
     <input type='text' name='create_food_foodName' id='create_food_foodName' required />
 
-    <label for='create_food_quanity'>Quantity: </label>
-    <input type='number' name='create_food_quantity' id='create_food_quantity' min='0'/>
+    <label for='create_food_quantity'>Quantity: </label>
+    <input type='number' name='create_food_quantity' id='create_food_quantity' min='0' required />
 
-    <label for='create_person_unit'>Unit:</label>
-    <input type='text' name='create_person_unit' id='create_person_unit' />
+    <label for='create_food_unit'>Unit:</label>
+    <input type='text' name='create_food_unit' id='create_food_unit' required />
 
     <input type='submit' />
 </form>
 
 {{! UPDATE form with confirmation }}
 <h2>Update a Food</h2>
-<form class='cuForm' id='update_food_form'onsubmit="return confirm('Are you sure you want to update this food?');">
+<form class='cuForm' id='update_food_form' method='POST' action='/Food/update' onsubmit="return confirm('Are you sure you want to update this food?');">
     <label for='update_food_id'>Food to Update: </label>
     <select name='update_food_id' id='update_food_id' required>
         <option value='' disabled selected>Select a Food</option>
         {{#each food}}
-        <option value='{{this.id}}' required>
+        <option value='{{this.idFood}}' required>
             {{this.id}}
             -
             {{this.foodName}}
@@ -79,7 +79,7 @@ Onsubmit code from Microsoft Copilot Prompt: How do I add a confirmation message
         {{/each}}
     </select>
 
-    <label for='update_food_unit'>Quantity: </label>
+    <label for='update_food_quantity'>Quantity: </label>
     <input type='number' name='update_food_quantity' id='update_food_quantity' min="0" />
 
     <label for='update_food_unit'>Unit: </label>

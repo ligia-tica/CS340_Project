@@ -283,6 +283,245 @@ app.post('/Animals', async function (req, res) {
     }
 });
 
+
+app.post('/Food', async function (req, res) {
+    try {
+        // Parse frontend form information
+        let data = req.body;
+
+        // Create and execute our queries
+        // Using parameterized queries (Prevents SQL injection attacks)
+        const query1 = `CALL sp_CreateFood(?, ?, ?, @new_id);`;
+
+        // Store ID of last inserted row
+        const [[rows]] = await db.query(query1, [
+            data.create_food_foodName,
+            data.create_food_quantity,
+            data.create_food_unit,
+        ]);
+
+        console.log(`CREATE Food. ID: ${rows[0].new_id} ` +
+            `Name: ${data.create_food_foodName}` +
+            `Quantity: ${data.create_food_quantity}` +
+            `Unit: ${data.create_food_unit}`
+        );
+
+        // Redirect the user to the updated webpage
+        res.redirect('/Food');
+    } catch (error) {
+        console.error('Error executing queries:', error);
+        // Send a generic error message to the browser
+        res.status(500).send(
+            'An error occurred while executing the database queries.'
+        );
+    }
+});
+
+
+app.post('/Employees_Animals', async function (req, res) {
+    try {
+        // Parse frontend form information
+        let data = req.body;
+
+        // Create and execute our queries
+        // Using parameterized queries (Prevents SQL injection attacks)
+        const query1 = `CALL sp_CreateEmployeesAnimals(?, ?, @new_id);`;
+
+        // Store ID of last inserted row
+        const [[rows]] = await db.query(query1, [
+            data.create_employees_animals_idEmployee,
+            data.create_employees_animals_idAnimal,
+        ]);
+
+        console.log(`CREATE Employees_Animals. ID: ${rows[0].new_id} ` +
+            `Employee ID: ${data.create_employees_animals_idEmployee} ` +
+            `Animal ID: ${data.create_employees_animals_idAnimal}`
+        );
+
+        // Redirect the user to the updated webpage
+        res.redirect('/Employees_Animals');
+    } catch (error) {
+        console.error('Error executing queries:', error);
+        // Send a generic error message to the browser
+        res.status(500).send(
+            'An error occurred while executing the database queries.'
+        );
+    }
+});
+
+
+
+// UPDATE ROUTES
+
+app.post('/Animals/update', async function (req, res) {
+    try {
+        // Parse frontend form information
+        const data = req.body;
+
+        // Create and execute our query
+        // Using parameterized queries (Prevents SQL injection attacks)
+        const query1 = 'CALL sp_UpdateAnimal(?, ?);';
+
+        await db.query(query1, [
+            data.update_animal_id,
+            data.update_animal_diet,
+        ]);
+
+        console.log(`UPDATE Animals. ID: ${data.update_animal_id} ` +
+            `New Diet (idFood): ${data.update_animal_diet}`
+        );
+
+        // Redirect the user to the updated webpage data
+        res.redirect('/Animals');
+    } catch (error) {
+        console.error('Error executing queries:', error);
+        // Send a generic error message to the browser
+        res.status(500).send(
+            'An error occurred while executing the database queries.'
+        );
+    }
+});
+
+
+app.post('/Food/update', async function (req, res) {
+    try {
+        // Parse frontend form information
+        const data = req.body;
+
+        // Create and execute our query
+        // Using parameterized queries (Prevents SQL injection attacks)
+        const query1 = 'CALL sp_UpdateFood(?, ?, ?);';
+
+        await db.query(query1, [
+            data.update_food_id,
+            data.update_food_quantity,
+            data.update_food_unit
+        ]);
+
+        console.log(`UPDATE Food. ID: ${data.update_food_id} ` +
+            `New Quantity (idFood): ${data.update_food_quantity}` +
+            `New Unit (idFood): ${data.update_food_unit}`
+        );
+
+        // Redirect the user to the updated webpage data
+        res.redirect('/Food');
+    } catch (error) {
+        console.error('Error executing queries:', error);
+        // Send a generic error message to the browser
+        res.status(500).send(
+            'An error occurred while executing the database queries.'
+        );
+    }
+});
+
+
+app.post('/Employees_Animals/update', async function (req, res) {
+    try {
+        // Parse frontend form information
+        const data = req.body;
+
+        // Create and execute our query
+        // Using parameterized queries (Prevents SQL injection attacks)
+        const query1 = 'CALL sp_UpdateEmployeesAnimals(?, ?, ?);';
+
+        await db.query(query1, [
+            data.update_employees_animals_idEmployee,
+            data.update_employees_animals_oldIdAnimal,
+            data.update_employees_animals_newIdAnimal
+        ]);
+
+        console.log(`UPDATE Employees_Animals. Employee ID: ${data.update_employees_animals_idEmployee} ` +
+            `Old Animal ID: ${data.update_employees_animals_oldIdAnimal} ` +
+            `New Animal ID: ${data.update_employees_animals_newIdAnimal}`
+        );
+
+        // Redirect the user to the updated webpage data
+        res.redirect('/Employees_Animals');
+    } catch (error) {
+        console.error('Error executing queries:', error);
+        // Send a generic error message to the browser
+        res.status(500).send(
+            'An error occurred while executing the database queries.'
+        );
+    }
+});
+
+
+// DELETE ROUTES
+
+app.post('/Animals/delete', async function (req, res) {
+    try {
+        // Parse frontend form information
+        let data = req.body;
+
+        // Create and execute our query
+        // Using parameterized queries (Prevents SQL injection attacks)
+        const query1 = `CALL sp_DeleteAnimal(?);`;
+        await db.query(query1, [data.delete_animal_id]);
+
+        console.log(`DELETE Animals. ID: ${data.delete_animal_id}`);
+
+        // Redirect the user to the updated webpage data
+        res.redirect('/Animals');
+    } catch (error) {
+        console.error('Error executing queries:', error);
+        // Send a generic error message to the browser
+        res.status(500).send(
+            'An error occurred while executing the database queries.'
+        );
+    }
+});
+
+
+app.post('/Food/delete', async function (req, res) {
+    try {
+        // Parse frontend form information
+        let data = req.body;
+
+        // Create and execute our query
+        // Using parameterized queries (Prevents SQL injection attacks)
+        const query1 = `CALL sp_DeleteFood(?);`;
+        await db.query(query1, [data.delete_food_id]);
+
+        console.log(`DELETE Food. ID: ${data.delete_food_id}`);
+
+        // Redirect the user to the updated webpage data
+        res.redirect('/Food');
+    } catch (error) {
+        console.error('Error executing queries:', error);
+        // Send a generic error message to the browser
+        res.status(500).send(
+            'An error occurred while executing the database queries.'
+        );
+    }
+});
+
+
+app.post('/Employees_Animals/delete', async function (req, res) {
+    try {
+        // Parse frontend form information
+        let data = req.body;
+
+        // Create and execute our query
+        // Using parameterized queries (Prevents SQL injection attacks)
+        const query1 = `CALL sp_DeleteEmployeesAnimals(?);`;
+        await db.query(query1, [data.delete_employees_animals_idEmployeeAnimal]);
+
+        console.log(`DELETE Employees_Animals. ID: ${data.delete_employees_animals_idEmployeeAnimal}`);
+
+        // Redirect the user to the updated webpage data
+        res.redirect('/Employees_Animals');
+    } catch (error) {
+        console.error('Error executing queries:', error);
+        // Send a generic error message to the browser
+        res.status(500).send(
+            'An error occurred while executing the database queries.'
+        );
+    }
+});
+
+
+
 // GET route - shows the reset page
 app.get('/Reset', function (req, res) {
     res.render('reset');

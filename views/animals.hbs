@@ -35,7 +35,7 @@ Onsubmit code from Microsoft Copilot- Prompt: How do I add a confirmation messag
             <td>{{this.Diet}}</td>
 
             {{! DELETE form with confirmation }}
-            <form id='delete_animal_form' onsubmit="return confirm('Are you sure you want to delete this animal?');">
+            <form id='delete_animal_form' method='POST' action='/Animals/delete' onsubmit="return confirm('Are you sure you want to delete this animal?');">
                 <input type='hidden' name='delete_animal_id' value='{{this.idAnimal}}' />
                 <input type='hidden' name='delete_animal_name' value='{{this.name}}' />
                 <td>
@@ -75,7 +75,7 @@ Onsubmit code from Microsoft Copilot- Prompt: How do I add a confirmation messag
 
 {{! UPDATE form with confirmation}}
 <h2>Update an animal</h2>
-<form class='cuForm' id='update_animal_form' onsubmit="return confirm('Are you sure you want to update this animal?');">
+<form class='cuForm' id='update_animal_form' method= 'POST' action= '/Animals/update' onsubmit="return confirm('Are you sure you want to update this animal?');">
     <label for='update_animal_id'>Animal to update: </label>
     <select name='update_animal_id' id='update_animal_id' required>
         <option value='' disabled selected>Select an Animal</option>

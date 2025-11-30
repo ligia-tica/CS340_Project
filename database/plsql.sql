@@ -27,7 +27,135 @@ BEGIN
 
     -- Example of how to get the ID of the newly created animal:
         -- CALL sp_CreateAnimal('Bessy', 'Cow', '2024-06-09', @new_id);
-        -- SELECT @new_id AS 'New Person ID';
+        -- SELECT @new_id AS 'New Animal ID';
+END //
+DELIMITER ;
+
+
+
+-- UPDATE Animal
+
+DROP PROCEDURE IF EXISTS sp_UpdateAnimal;
+
+DELIMITER //
+CREATE PROCEDURE sp_UpdateAnimal(IN p_idAnimal INT, IN p_idFood INT)
+
+BEGIN
+    UPDATE Animals SET idFood = p_idFood WHERE idAnimal = p_idAnimal; 
+END //
+DELIMITER ;
+
+
+-- DELETE Animal
+
+DROP PROCEDURE IF EXISTS sp_DeleteAnimal;
+
+DELIMITER //
+CREATE PROCEDURE sp_DeleteAnimal(IN p_idAnimal INT)
+BEGIN
+    DECLARE error_message VARCHAR(255);
+ 
+
+    -- error handling
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        -- Roll back the transaction on any error
+        ROLLBACK;
+        -- Propogate the custom error message to the caller
+        RESIGNAL;
+    END;
+
+    START TRANSACTION;
+        -- Deleting corresponding rows from both Animals table and 
+        --      intersection table to prevent a data anomaly
+        -- This can also be accomplished by using an 'ON DELETE CASCADE' constraint
+        --      inside the Employees_Animals table.
+        DELETE FROM Employees_Animals WHERE idAnimal = p_idAnimal;
+        DELETE FROM Animals WHERE idAnimal = p_idAnimal;
+
+        -- ROW_COUNT() returns the number of rows affected by the preceding statement.
+        IF ROW_COUNT() = 0 THEN
+            set error_message = CONCAT('No matching record found in Animals for id: ', p_idAnimal);
+            -- Trigger custom error, invoke EXIT HANDLER
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = error_message;
+        END IF;
+
+    COMMIT;
+
+END //
+DELIMITER ;
+
+
+-- CREATE Food
+DROP PROCEDURE IF EXISTS sp_CreateFood;
+
+DELIMITER //
+CREATE PROCEDURE sp_CreateFood(
+    IN p_foodName VARCHAR(255), 
+    IN p_quantity INT, 
+    IN p_unit VARCHAR(255),
+    OUT p_id INT)
+BEGIN
+    INSERT INTO Food (foodName, quantity, unit) 
+    VALUES (p_foodName, p_quantity, p_unit);
+
+    -- Store the ID of the last inserted row
+    SELECT LAST_INSERT_ID() into p_id;
+    -- Display the ID of the last inserted food.
+    SELECT LAST_INSERT_ID() AS 'new_id';
+
+END //
+DELIMITER ;
+
+
+-- UPDATE Food
+
+DROP PROCEDURE IF EXISTS sp_UpdateFood;
+
+DELIMITER //
+CREATE PROCEDURE sp_UpdateFood(IN p_idFood INT, IN p_quantity INT, IN p_unit VARCHAR(255))
+
+BEGIN
+    UPDATE Food SET quantity = p_quantity, unit = p_unit WHERE idFood = p_idFood; 
+END //
+DELIMITER ;
+
+
+-- DELETE Food
+
+DROP PROCEDURE IF EXISTS sp_DeleteFood;
+
+DELIMITER //
+CREATE PROCEDURE sp_DeleteFood(IN p_idFood INT)
+BEGIN
+    DECLARE error_message VARCHAR(255);
+ 
+
+    -- error handling
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        -- Roll back the transaction on any error
+        ROLLBACK;
+        -- Propogate the custom error message to the caller
+        RESIGNAL;
+    END;
+
+    START TRANSACTION;
+        -- Deleting corresponding rows from both Food table and 
+        -- updating the Animals table to Null for Diet
+
+        UPDATE Animals SET idFood = NULL WHERE idFood = p_idFood;
+        DELETE FROM Food WHERE idFood = p_idFood;
+
+        -- ROW_COUNT() returns the number of rows affected by the preceding statement.
+        IF ROW_COUNT() = 0 THEN
+            set error_message = CONCAT('No matching record found in Food for id: ', p_idFood);
+            -- Trigger custom error, invoke EXIT HANDLER
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = error_message;
+        END IF;
+
+    COMMIT;
+
 END //
 DELIMITER ;
 
@@ -59,6 +187,93 @@ BEGIN
         -- SELECT @new_id AS 'New Person ID';
 END //
 DELIMITER ;
+
+
+-- CREATE Employees_Animals
+DROP PROCEDURE IF EXISTS sp_CreateEmployeesAnimals;
+
+DELIMITER //
+CREATE PROCEDURE sp_CreateEmployeesAnimals(
+    IN p_idEmployee INT, 
+    IN p_idAnimal INT, 
+    OUT p_id INT)
+BEGIN
+    DECLARE error_message VARCHAR(255);
+
+    START TRANSACTION;
+        -- Check if this relationship already exists to prevent duplicates. Used Claude AI for the code below using 
+        -- prompt: How to check for duplicate relationships when adding a relationship?
+        IF EXISTS (SELECT 1 FROM Employees_Animals 
+                   WHERE idEmployee = p_idEmployee AND idAnimal = p_idAnimal) THEN
+            SET error_message = 'This employee is already trained for this animal.';
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = error_message;
+        END IF;
+
+    INSERT INTO Employees_Animals (idEmployee, idAnimal)  
+    VALUES (p_idEmployee, p_idAnimal);
+
+    -- Store the ID of the last inserted row
+    SELECT LAST_INSERT_ID() into p_id;
+    -- Display the ID of the last inserted food.
+    SELECT LAST_INSERT_ID() AS 'new_id';
+
+END //
+DELIMITER ;
+
+-- UPDATE Employees_Animals
+
+DROP PROCEDURE IF EXISTS sp_UpdateEmployeesAnimals;
+
+DELIMITER //
+CREATE PROCEDURE sp_UpdateEmployeesAnimals(IN p_idEmployee INT, IN p_oldIdAnimal INT, IN p_newIdAnimal INT)
+
+BEGIN
+    
+    UPDATE Employees_Animals SET idAnimal = p_newIdAnimal WHERE idEmployee = p_idEmployee AND idAnimal = p_oldIdAnimal;
+END //
+DELIMITER ;
+
+
+-- DELETE Employees_Animals
+
+DROP PROCEDURE IF EXISTS sp_DeleteEmployeesAnimals;
+
+DELIMITER //
+CREATE PROCEDURE sp_DeleteEmployeesAnimals(IN p_idEmployeeAnimal INT)
+BEGIN
+    DECLARE error_message VARCHAR(255);
+ 
+
+    -- error handling
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        -- Roll back the transaction on any error
+        ROLLBACK;
+        -- Propogate the custom error message to the caller
+        RESIGNAL;
+    END;
+
+    START TRANSACTION;
+        -- Deleting corresponding rows from both Employees_Animals table
+        -- This can also be accomplished by using an 'ON DELETE CASCADE' constraint
+        --      inside the Employees_Animals table.
+        DELETE FROM Employees_Animals WHERE idEmployeeAnimal = p_idEmployeeAnimal;
+
+
+        -- ROW_COUNT() returns the number of rows affected by the preceding statement.
+        IF ROW_COUNT() = 0 THEN
+            set error_message = CONCAT('No matching record found in Employees_Animals for id: ', COALESCE(p_idEmployeeAnimal, 'NULL'));
+            -- Trigger custom error, invoke EXIT HANDLER
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = error_message;
+        END IF;
+
+    COMMIT;
+
+END //
+DELIMITER ;
+
+
+
 
 
 
