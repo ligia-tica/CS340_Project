@@ -5,7 +5,6 @@ Base code used from Exploration - Web Application Technology
 URL: https://canvas.oregonstate.edu/courses/2017561/pages/exploration-web-application-technology-2?module_item_id=25645131
 */
 
-
 h1, h2, h3, p {margin-left: 16px;}
 table {border-collapse: collapse;margin-left: 32px;}
 th, td {
@@ -15,6 +14,26 @@ th, td {
 }
 th {background-color: #f2f2f2;}
 tr:nth-child(even) {background-color: #f9f9f9;}
+
+/* 
+Citation for the following delete employee code:
+Date: 11/30/2025 
+Copilot Prompt: I have a database with employees, sales, ect. How can I strike out the employee to signify they have been deleted, but not actually delete to preserve their sales */
+
+
+/* soft delete employees strikethrough */
+tr.inactive td {
+    text-decoration: line-through; /* strike through text only */
+    background-color: #fff; /* keep background normal */
+}
+
+/* inactive label styling */
+.inactive-label {
+    font-style: italic;
+    color: #888;
+    font-size: 0.9em;
+}
+
 .cuForm { margin-left: 32px;}
 input, select { margin-bottom: 4px;margin-right: 12px;}
 nav {background-color: #cecece;padding: 16px;}

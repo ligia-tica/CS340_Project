@@ -162,8 +162,11 @@ app.get('/sales', async function (req, res) {
 
 app.get('/employees', async function (req, res) {
     try {
-        // Query all employees
-        const query1 = `SELECT idEmployee, lastName, firstName, email, jobTitle, hourlyRate FROM Employees;`;
+        // Query all employees, include is_active so the template can decide active/inactive
+        const query1 = `
+            SELECT idEmployee, lastName, firstName, email, jobTitle, hourlyRate, is_active
+            FROM Employees;
+        `;
         const [employees] = await db.query(query1);
 
         // Render the employees.hbs file with the data
@@ -173,6 +176,7 @@ app.get('/employees', async function (req, res) {
         res.status(500).send('An error occurred while executing the database queries.');
     }
 });
+
 
 app.get('/employees_animals', async function (req, res) {
     try {
@@ -201,6 +205,87 @@ app.get('/employees_animals', async function (req, res) {
 });
 
 // CREATE ROUTES
+// CREATE SALES ROUTE
+app.post('/sales/create', async function (req, res) {
+    try {
+        // Parse frontend form information
+        let data = req.body;
+
+        // Cleanse data - ensure numbers are valid or set to NULL
+        if (isNaN(parseInt(data.create_sale_passes_sold))) 
+            data.create_sale_passes_sold = null;
+        if (isNaN(parseInt(data.create_sale_pass_id))) 
+            data.create_sale_pass_id = null;
+        if (isNaN(parseInt(data.create_sale_employee_id))) 
+            data.create_sale_employee_id = null;
+
+        // Ensure sale date is provided
+        if (!data.create_sale_date) 
+            data.create_sale_date = null;
+
+        // Call stored procedure (5 arguments expected)
+        const query = `CALL sp_CreateSale(?, ?, ?, ?, @new_id);`;
+
+        const [[[rows]]] = await db.query(query, [
+            data.create_sale_passes_sold,   // cannot be null
+            data.create_sale_date,           // cannot be null
+            data.create_sale_pass_id,        // foreign key
+            data.create_sale_employee_id     // foreign key
+        ]);
+
+        console.log(`CREATE sale. ID: ${rows.new_id} ` +
+            `Passes Sold: ${data.create_sale_passes_sold} ` +
+            `Sale Date: ${data.create_sale_date} ` +
+            `Pass ID: ${data.create_sale_pass_id} ` +
+            `Employee ID: ${data.create_sale_employee_id}`
+        );
+
+        res.redirect('/sales');
+    } catch (error) {
+        console.error('Error executing queries:', error);
+        res.status(500).send(
+            'An error occurred while executing the database queries.'
+        );
+    }
+});
+
+
+app.post('/passes/create', async function (req, res) {
+    try {
+        // Parse frontend form information
+        let data = req.body;
+
+        // Cleanse data - ensure price is a number
+        if (isNaN(parseFloat(data.create_pass_price)))
+            data.create_pass_price = null;
+
+        // Create and execute our query
+        // Using parameterized queries (prevents SQL injection attacks)
+        const query1 = `CALL sp_CreatePass(?, ?, @new_id);`;
+
+        // Store ID of last inserted row
+        const [[[rows]]] = await db.query(query1, [
+            data.create_pass_price,
+            data.create_pass_category
+        ]);
+
+        console.log(`CREATE pass. ID: ${rows.new_pass_id} ` +
+            `Price: ${data.create_pass_price} Category: ${data.create_pass_category}`
+        );
+
+        // Redirect the user to the updated webpage
+        res.redirect('/passes');
+    } catch (error) {
+        console.error('Error executing queries:', error);
+        // Send a generic error message to the browser
+        res.status(500).send(
+            'An error occurred while executing the database queries.'
+        );
+    }
+});
+
+
+
 app.post('/employees/create', async function (req, res) {
     try {
         // Parse frontend form information
@@ -353,6 +438,96 @@ app.post('/Employees_Animals', async function (req, res) {
 
 // UPDATE ROUTES
 
+app.post('/sales/update', async function (req, res) {
+    try {
+        // Parse frontend form information
+        const data = req.body;
+
+        // Cleanse data - ensure numbers are valid or set to NULL
+        if (isNaN(parseInt(data.update_sale_passes_sold)))
+            data.update_sale_passes_sold = null;
+        if (isNaN(parseInt(data.update_sale_pass_id)))
+            data.update_sale_pass_id = null;
+        if (isNaN(parseInt(data.update_sale_employee_id)))
+            data.update_sale_employee_id = null;
+
+        // Create and execute our query
+        // Using parameterized query (prevents SQL injection attacks)
+        const query1 = 'CALL sp_UpdateSale(?, ?, ?, ?, ?);';
+        const query2 = 'SELECT * FROM Sales WHERE idSale = ?;';
+
+        // FIXED: Correct order of parameters to match HBS form
+        await db.query(query1, [
+            data.update_sale_id,           // Sale ID
+            data.update_sale_passes_sold,  // Passes Sold
+            data.update_sale_date,         // Sale Date
+            data.update_sale_pass_id,      // Pass Type / Pass ID
+            data.update_sale_employee_id   // Employee ID
+        ]);
+
+        // Retrieve the updated sale record
+        const [[rows]] = await db.query(query2, [data.update_sale_id]);
+
+        console.log(`UPDATE sale. ID: ${data.update_sale_id} ` +
+            `Pass ID: ${rows.idPass} Employee ID: ${rows.idEmployee} ` +
+            `Passes Sold: ${rows.passesSold} Sale Date: ${rows.saleDate}`
+        );
+
+        // Redirect the user to the updated sales page
+        res.redirect('/sales');
+    } catch (error) {
+        console.error('Error executing queries:', error);
+        // Send a generic error message to the browser
+        res.status(500).send(
+            'An error occurred while executing the database queries.'
+        );
+    }
+});
+
+
+
+
+// UPDATE PASSES ROUTE
+
+app.post('/passes/update', async function (req, res) {
+    try {
+        // Parse frontend form information
+        const data = req.body;
+
+        // Cleanse data - ensure numbers are valid or set to NULL
+        if (isNaN(parseFloat(data.update_pass_price)))
+            data.update_pass_price = null;
+
+        // Create and execute our queries
+        // Using parameterized queries (prevents SQL injection attacks)
+        const query1 = 'CALL sp_UpdatePass(?, ?, ?);';
+        const query2 = 'SELECT * FROM Passes WHERE idPass = ?;';
+
+        await db.query(query1, [
+            data.update_pass_id,
+            data.update_pass_price,
+            data.update_pass_category
+        ]);
+
+        const [[rows]] = await db.query(query2, [data.update_pass_id]);
+
+        console.log(`UPDATE pass. ID: ${data.update_pass_id} ` +
+            `Price: ${rows.price} Category: ${rows.category}`
+        );
+
+        // Redirect the user to the updated passes page
+        res.redirect('/passes');
+    } catch (error) {
+        console.error('Error executing queries:', error);
+        // Send a generic error message to the browser
+        res.status(500).send(
+            'An error occurred while executing the database queries.'
+        );
+    }
+});
+
+
+
 app.post('/Animals/update', async function (req, res) {
     try {
         // Parse frontend form information
@@ -447,7 +622,51 @@ app.post('/Employees_Animals/update', async function (req, res) {
 });
 
 
+app.post('/employees/update', async function (req, res) {
+    try {
+        // Parse frontend form information
+        const data = req.body;
+
+        // Cleanse data - If hourlyRate isn't a number, make it NULL.
+        if (isNaN(parseFloat(data.update_employee_hourlyRate)))
+            data.update_employee_hourlyRate = null;
+
+        // Create and execute our query
+        // Using parameterized queries (Prevents SQL injection attacks)
+        const query1 = 'CALL sp_UpdateEmployee(?, ?, ?, ?, ?, ?);';
+        const query2 = 'SELECT firstName, lastName FROM Employees WHERE idEmployee = ?;';
+
+        await db.query(query1, [
+            data.update_employee_id,
+            data.update_employee_lastName,
+            data.update_employee_firstName,
+            data.update_employee_email,
+            data.update_employee_jobTitle,
+            data.update_employee_hourlyRate
+        ]);
+
+        const [[rows]] = await db.query(query2, [data.update_employee_id]);
+
+        console.log(
+            `UPDATE Employees. ID: ${data.update_employee_id} ` +
+            `Name: ${rows.firstName} ${rows.lastName}`
+        );
+
+        // Redirect the user to the updated webpage data
+        res.redirect('/employees');
+    } catch (error) {
+        console.error('Error executing queries:', error);
+        // Send a generic error message to the browser
+        res.status(500).send(
+            'An error occurred while executing the database queries.'
+        );
+    }
+});
+
+
+
 // DELETE ROUTES
+
 
 app.post('/Animals/delete', async function (req, res) {
     try {
@@ -511,6 +730,37 @@ app.post('/Employees_Animals/delete', async function (req, res) {
 
         // Redirect the user to the updated webpage data
         res.redirect('/Employees_Animals');
+    } catch (error) {
+        console.error('Error executing queries:', error);
+        // Send a generic error message to the browser
+        res.status(500).send(
+            'An error occurred while executing the database queries.'
+        );
+    }
+});
+
+/* 
+Citation for the following delete employee code:
+Date: 11/30/2025 
+Copilot Prompt: I have a database with employees, sales, ect. How can I strike out the employee to signify they have been deleted, but not actually delete to preserve their sales */
+
+// SOFT DELETE/DEACTIVATE ROUTE
+app.post('/employees/deactivate', async function (req, res) {
+    try {
+        // Parse frontend form information
+        let data = req.body;
+
+        // Create and execute our query
+        // Using parameterized queries (Prevents SQL injection attacks)
+        const query1 = `CALL sp_DeactivateEmployee(?);`;
+        await db.query(query1, [data.deactivate_employee_id]);
+
+        console.log(`DEACTIVATE employees. ID: ${data.deactivate_employee_id} ` +
+            `Name: ${data.deactivate_employee_name}`
+        );
+
+        // Redirect the user to the updated webpage data
+        res.redirect('/employees');
     } catch (error) {
         console.error('Error executing queries:', error);
         // Send a generic error message to the browser

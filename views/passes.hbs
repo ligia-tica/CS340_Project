@@ -10,54 +10,46 @@ Onsubmit code from Microsoft Copilot Prompt: How do I add a confirmation message
 
 <h1>Passes</h1>
 
-{{! READ table }}
+{{!-- READ table --}}
 <table>
     <thead>
         <tr>
             {{#each passes.[0]}}
             <th>{{@key}}</th>
             {{/each}}
-            <th></th>
+
         </tr>
     </thead>
-      {{! For each row, print the idPass, price and category }}
     <tbody>
         {{#each passes}}
         <tr>
             <td>{{this.idPass}}</td>
             <td>{{this.price}}</td>
             <td>{{this.category}}</td>
-
-            <td>
-
-            {{! DELETE form with added confirmation}}
-            <form id='delete_pass_form' onsubmit="return confirm('Are you sure you want to delete this pass?');">
-                <input type='hidden' name='delete_pass_id' value='{{this.idPass}}' />       
-                    <button type='submit'>Delete</button>
-                
-            </form>
-            </td>
+            
         </tr>
         {{/each}}
     </tbody>
 </table>
 
-{{! CREATE form with added confirmation }}
+{{!-- CREATE form with confirmation --}}
 <h2>Add a Pass</h2>
-<form class='cuForm' id='create_pass_form'onsubmit="return confirm('Are you sure you want to create this pass?');">
+<form class='cuForm' id='create_pass_form' action='/passes/create' method='POST'
+onsubmit="return confirm('Are you sure you want to create this pass?');">
 
     <label for='create_price'>Price:</label>
-    <input type='number' name='create_price' id='create_price' step='0.01' min='0' required />
+    <input type='number' name='create_pass_price' id='create_price' step='0.01' min='0' required />
 
     <label for='create_category'>Category:</label>
-    <input type='text' name='create_category' id='create_category' placeholder='Type a new category' required />
+    <input type='text' name='create_pass_category' id='create_category' placeholder='Type a new category' required />
 
     <input type='submit' />
 </form>
 
-{{! UPDATE form with added confirmation}}
+{{!-- UPDATE form with confirmation --}}
 <h2>Update a Pass</h2>
-<form class='cuForm' id='update_pass_form'onsubmit="return confirm('Are you sure you want to update this pass?');">
+<form class='cuForm' id='update_pass_form' action='/passes/update' method='POST'
+    onsubmit="return confirm('Are you sure you want to update this pass?');">
 
     <label for='update_pass_id'>Pass to Update:</label>
     <select name='update_pass_id' id='update_pass_id' required>
@@ -70,7 +62,10 @@ Onsubmit code from Microsoft Copilot Prompt: How do I add a confirmation message
     </select>
 
     <label for='update_price'>New Price:</label>
-    <input type='number' name='update_price' id='update_price' step='0.01' min='0' required />
+    <input type='number' name='update_pass_price' id='update_price' step='0.01' min='0' required />
+
+    <label for='update_category'>New Category:</label>
+    <input type='text' name='update_pass_category' id='update_category' required />
 
     <input type='submit' />
 </form>

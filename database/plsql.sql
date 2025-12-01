@@ -85,6 +85,99 @@ BEGIN
 END //
 DELIMITER ;
 
+-- CREATE Passes
+
+DROP PROCEDURE IF EXISTS sp_CreatePass;
+
+DELIMITER //
+CREATE PROCEDURE sp_CreatePass(
+    IN p_price DECIMAL(10,2),
+    IN p_category VARCHAR(45),
+    OUT p_idPass INT
+)
+BEGIN
+    INSERT INTO Passes (price, category) 
+    VALUES (p_price, p_category);
+
+    -- Store the ID of the last inserted row
+    SELECT LAST_INSERT_ID() INTO p_idPass;
+    SELECT LAST_INSERT_ID() AS 'new_pass_id';
+END //
+DELIMITER ;
+
+-- UPDATE Passes
+
+DROP PROCEDURE IF EXISTS sp_UpdatePass;
+
+DELIMITER //
+CREATE PROCEDURE sp_UpdatePass(
+    IN p_id INT,
+    IN p_price DECIMAL(10,2),
+    IN p_category VARCHAR(255)
+)
+BEGIN
+    UPDATE Passes 
+    SET 
+        price = p_price,
+        category = p_category
+    WHERE idPass = p_id;
+END //
+DELIMITER ;
+
+
+-- CREATE Sales
+
+DROP PROCEDURE IF EXISTS sp_CreateSale;
+
+DELIMITER //
+CREATE PROCEDURE sp_CreateSale(
+    IN p_passesSold INT,
+    IN p_saleDate DATE,
+    IN p_idPass INT,
+    IN p_idEmployee INT,
+    OUT p_id INT
+)
+BEGIN
+    INSERT INTO Sales (passesSold, saleDate, idPass, idEmployee)
+    VALUES (p_passesSold, p_saleDate, p_idPass, p_idEmployee);
+
+    -- Store the ID of the last inserted row
+    SELECT LAST_INSERT_ID() INTO p_id;
+
+    -- Display the ID of the last inserted sale
+    SELECT LAST_INSERT_ID() AS 'new_id';
+
+    -- Example usage:
+        -- CALL sp_CreateSale(3, '2024-03-01', 5, 12, @new_id);
+        -- SELECT @new_id AS 'New Sale ID';
+END //
+DELIMITER ;
+
+
+-- UPDATE Sales
+
+DROP PROCEDURE IF EXISTS sp_UpdateSale;
+
+DELIMITER //
+CREATE PROCEDURE sp_UpdateSale(
+    IN p_id INT,
+    IN p_passesSold INT,
+    IN p_saleDate DATE,
+    IN p_idPass INT,
+    IN p_idEmployee INT
+)
+BEGIN
+    UPDATE Sales 
+    SET 
+        passesSold = p_passesSold,
+        saleDate = p_saleDate,
+        idPass = p_idPass,
+        idEmployee = p_idEmployee
+    WHERE idSale = p_id;
+END //
+DELIMITER ;
+
+
 
 -- CREATE Food
 DROP PROCEDURE IF EXISTS sp_CreateFood;
@@ -174,8 +267,8 @@ CREATE PROCEDURE sp_CreateEmployee(
     OUT p_idEmployee INT
     )
 BEGIN
-    INSERT INTO Employees (lastName, firstName, email, jobTitle, hourlyRate) 
-    VALUES (p_lastName, p_firstName, p_email, p_jobTitle, p_hourlyRate);
+    INSERT INTO Employees (lastName, firstName, email, jobTitle, hourlyRate, is_active) 
+    VALUES (p_lastName, p_firstName, p_email, p_jobTitle, p_hourlyRate, 1);
 
     -- Store the ID of the last inserted row
     SELECT LAST_INSERT_ID() into p_idEmployee;
@@ -187,6 +280,79 @@ BEGIN
         -- SELECT @new_id AS 'New Person ID';
 END //
 DELIMITER ;
+
+-- UPDATE Employees
+
+DROP PROCEDURE IF EXISTS sp_UpdateEmployee;
+
+DELIMITER //
+CREATE PROCEDURE sp_UpdateEmployee(
+    IN p_idEmployee INT,
+    IN p_lastName VARCHAR(20), 
+    IN p_firstName VARCHAR(20), 
+    IN p_email VARCHAR(45), 
+    IN p_jobTitle VARCHAR (45),
+    IN p_hourlyRate DECIMAL (10,2)
+    )
+
+BEGIN
+    UPDATE Employees 
+    SET
+        lastName = p_lastName,
+        firstName = p_firstName,
+        email = p_email,
+        jobTitle = p_jobTitle,
+        hourlyRate = p_hourlyRate
+    
+    WHERE idEmployee = p_idEmployee;
+END //
+DELIMITER ;
+
+/* 
+Citation for the following soft delete employee code:
+Date: 11/30/2025 
+Copilot Prompt: I have a database with employees, sales, ect. How can I strike out the employee to signify they have been deleted, but not actually delete to preserve their sales */
+
+
+-- SOFT DELETE/DEACIVATE Employees
+
+DROP PROCEDURE IF EXISTS sp_DeactivateEmployee;
+
+DELIMITER //
+CREATE PROCEDURE sp_DeactivateEmployee(IN p_id INT)
+BEGIN
+    DECLARE error_message VARCHAR(255); 
+
+    -- error handling
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        -- Roll back the transaction on any error
+        ROLLBACK;
+        -- Propagate the custom error message to the caller
+        RESIGNAL;
+    END;
+
+    START TRANSACTION;
+        -- Instead of deleting, mark the employee as inactive
+        UPDATE Employees
+        SET is_active = FALSE
+        WHERE idEmployee = p_id;
+
+        -- ROW_COUNT() returns the number of rows affected by the preceding statement.
+        IF ROW_COUNT() = 0 THEN
+            SET error_message = CONCAT('No matching record found in Employees for id: ', p_id);
+            -- Trigger custom error, invoke EXIT HANDLER
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = error_message;
+        END IF;
+
+    COMMIT;
+
+END //
+DELIMITER ;
+
+
+
+
 
 
 -- CREATE Employees_Animals
@@ -277,9 +443,9 @@ DELIMITER ;
 
 
 
----------------------------------------
--- RESET procedure --
----------------------------------------
+
+-- RESET procedure 
+
 
 
 USE `cs340_tical`;
@@ -333,6 +499,7 @@ BEGIN
     `email` varchar(45) NOT NULL,
     `jobTitle` varchar(45) NOT NULL,
     `hourlyRate` decimal(10,2) NOT NULL,
+    `is_active` TINYINT(1) NOT NULL DEFAULT 1,
     PRIMARY KEY (`idEmployee`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 

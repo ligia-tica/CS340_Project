@@ -5,12 +5,12 @@ Base code used from Exploration - Web Application Technology and Exploration Imp
 URL: https://canvas.oregonstate.edu/courses/2017561/pages/exploration-web-application-technology-2?module_item_id=25645131
 URL: https://canvas.oregonstate.edu/courses/2017561/pages/exploration-implementing-cud-operations-in-your-app?module_item_id=25645149
 Onsubmit code from Microsoft Copilot Prompt: How do I add a confirmation message in the form tag of my hbs file?
-
 --}}
+
 
 <h1>Sales</h1>
 
-{{! READ table }}
+{{!-- READ table --}}
 <table>
     <thead>
         <tr>
@@ -19,9 +19,7 @@ Onsubmit code from Microsoft Copilot Prompt: How do I add a confirmation message
             {{/each}}
         </tr>
     </thead>
-
     <tbody>
-        {{! For each row, print the idSale, idPass, idEmployee, passesSold and saleDate }}
         {{#each sales}}
         <tr>
             <td>{{this.idSale}}</td>
@@ -34,72 +32,70 @@ Onsubmit code from Microsoft Copilot Prompt: How do I add a confirmation message
     </tbody>
 </table>
 
-{{! CREATE form with added confirmation }}
+{{!-- CREATE form --}}
 <h2>Add a Sale</h2>
-<form class='cuForm' id='create_sale_form' onsubmit="return confirm('Are you sure you want to create this sale?');">
+<form class='cuForm' id='create_sale_form' action='/sales/create' method='POST'
+    onsubmit="return confirm('Are you sure you want to create this sale?');">
 
-    <label for='create_passesSold'>Passes Sold:</label>
-    <input type='number' name='create_passesSold' id='create_passesSold' min='1' required />
+    <label for='create_sale_passes_sold'>Passes Sold:</label>
+    <input type='number' name='create_sale_passes_sold' id='create_sale_passes_sold' min='1' required />
 
-    <label for='create_saleDate'>Sale Date:</label>
-    <input type='date' name='create_saleDate' id='create_saleDate' required />
+    <label for='create_sale_sale_date'>Sale Date:</label>
+    <input type='date' name='create_sale_date' id='create_sale_sale_date' required />
 
-    <label for='create_pass'>Pass:</label>
-    <select name='create_pass' id='create_pass' required>
+    <label for='create_sale_pass_id'>Pass:</label>
+    <select name='create_sale_pass_id' id='create_sale_pass_id' required>
         <option value='' disabled selected>Select a Pass</option>
         {{#each passes}}
         <option value='{{this.idPass}}'>{{this.category}}</option>
         {{/each}}
     </select>
 
-    <label for='create_employee'>Employee:</label>
-    <select name='create_employee' id='create_employee' required>
+    <label for='create_sale_employee_id'>Employee:</label>
+    <select name='create_sale_employee_id' id='create_sale_employee_id' required>
         <option value='' disabled selected>Select an Employee</option>
         {{#each employees}}
         <option value='{{this.idEmployee}}'>{{this.firstName}} {{this.lastName}}</option>
         {{/each}}
     </select>
 
-    <input type='submit'  />
+    <input type='submit' />
 </form>
 
-{{! UPDATE form with added confirmation }}
+{{!-- UPDATE form --}}
 <h2>Update a Sale</h2>
-<form class='cuForm' id='update_sale_form'onsubmit="return confirm('Are you sure you want to update this sale?');">
+<form class='cuForm' id='update_sale_form' action='/sales/update' method='POST'
+    onsubmit="return confirm('Are you sure you want to update this sale?');">
 
     <label for='update_sale_id'>Sale to Update:</label>
     <select name='update_sale_id' id='update_sale_id' required>
         <option value='' disabled selected>Select a Sale</option>
         {{#each sales}}
-        <option value='{{this.idSale}}'>
-            {{this.idSale}}
-        </option>
+        <option value='{{this.idSale}}'>{{this.idSale}}</option>
         {{/each}}
     </select>
 
-    <label for='update_passes_sold'>New Passes Sold:</label>
-    <input type='number' name='update_passes_sold' id='update_passes_sold' min='0' required />
+    <label for='update_sale_passes_sold'>New Passes Sold:</label>
+    <input type='number' name='update_sale_passes_sold' id='update_sale_passes_sold' min='0' required />
 
-    <label for='update_sales_date'>New Sale Date:</label>
-    <input type='date' name='update_sales_date' id='update_sales_date' required />
+    <label for='update_sale_date'>New Sale Date:</label>
+    <input type='date' name='update_sale_date' id='update_sale_date' required />
 
-    <label for='update_pass'>New Pass Type:</label>
-    <select name='update_pass' id='update_pass' required>
+    <label for='update_sale_pass_id'>New Pass Type:</label>
+    <select name='update_sale_pass_id' id='update_sale_pass_id' required>
         <option value='' disabled selected>Select a Pass</option>
         {{#each passes}}
         <option value='{{this.idPass}}'>{{this.category}}</option>
         {{/each}}
-     </select>
+    </select>
 
-    <label for='update_employee'>New Employee:</label>
-    <select name='update_employee' id='update_employee' required>
+    <label for='update_sale_employee_id'>New Employee:</label>
+    <select name='update_sale_employee_id' id='update_sale_employee_id' required>
         <option value='' disabled selected>Select an Employee</option>
         {{#each employees}}
         <option value='{{this.idEmployee}}'>{{this.firstName}} {{this.lastName}}</option>
         {{/each}}
-     </select>
-
-
+    </select>
 
     <input type='submit' />
 </form>
