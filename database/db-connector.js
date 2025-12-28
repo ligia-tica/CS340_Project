@@ -8,13 +8,15 @@
 let mysql = require('mysql2')
 
 // Create a 'connection pool' using the provided credentials
+// Uses environment variables for Docker deployment, with fallbacks for local development
 const pool = mysql.createPool({
     waitForConnections: true,
     connectionLimit   : 10,
-    host              : 'classmysql.engr.oregonstate.edu',
-    user              : 'cs340_',
-    password          : '',
-    database          : 'cs340_'
+    host              : process.env.DB_HOST || 'classmysql.engr.oregonstate.edu',
+    user              : process.env.DB_USER || 'cs340_',
+    password          : process.env.DB_PASSWORD || '',
+    database          : process.env.DB_NAME || 'cs340_',
+    port              : process.env.DB_PORT || 3306
 }).promise(); // This makes it so we can use async / await rather than callbacks
 
 // Export it for use in our application

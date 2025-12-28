@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  # Node.js Express Web Server
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: zoo-app
+    ports:
+      - "11000:11000"
+    environment:
+      - NODE_ENV=production
+      - DB_HOST=db
+      - DB_USER=zoo_user
+      - DB_PASSWORD=zoo_password
+      - DB_NAME=zoo_database
+      - DB_PORT=3306
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - zoo-network
+
+  # MySQL Database
+  db:
+    build:
+      context: ./database
+      dockerfile: Dockerfile
+    container_name: zoo-db
+    # No ports exposed - only accessible within the Docker network
+    environment:
+      - MYSQL_ROOT_PASSWORD=root_password
+      - MYSQL_DATABASE=zoo_database
+      - MYSQL_USER=zoo_user
+      - MYSQL_PASSWORD=zoo_password
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root --password=$$MYSQL_ROOT_PASSWORD || exit 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+    restart: unless-stopped
+    networks:
+      - zoo-network
+
+volumes:
+  mysql_data:
+
+networks:
+  zoo-network:
+    driver: bridge
